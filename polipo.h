@@ -129,16 +129,21 @@ THE SOFTWARE.
 
 #ifndef NO_IPv6
 
-#ifdef __GLIBC__
-#if (__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 2)
+/* In 2018, it's safe to assume most systems have IPv6 */
 #define HAVE_IPv6
+
+#ifdef __GLIBC__
+#if (__GLIBC__ < 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ < 2)
+#undef HAVE_IPv6
 #endif
 #endif
 
 #ifdef __FreeBSD__
 #define HAVE_ASPRINTF
+#if __FreeBSD_version < 400000
+#undef HAVE_IPv6
+#endif
 #if __FreeBSD_version >= 400000
-#define HAVE_IPv6
 #define HAVE_TIMEGM
 #endif
 #if __FreeBSD_version >= 503001
@@ -147,8 +152,8 @@ THE SOFTWARE.
 #endif
 
 #ifdef __NetBSD__
-#if __NetBSD_Version__ >= 105000000
-#define HAVE_IPv6
+#if __NetBSD_Version__ < 105000000
+#undef HAVE_IPv6
 #endif
 #if __NetBSD_Version__ >= 200000000
 #define HAVE_TIMEGM
@@ -158,13 +163,11 @@ THE SOFTWARE.
 
 #ifdef __OpenBSD__
 /* OpenBSD 2.3 and later */
-#define HAVE_IPv6
 #define HAVE_ASPRINTF
 #endif
 
 #ifdef __APPLE__
 #define HAVE_ASPRINTF
-#define HAVE_IPv6
 #define HAVE_TIMEGM
 #define HAVE_FFSL
 #endif
